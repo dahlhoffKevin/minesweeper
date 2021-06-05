@@ -105,9 +105,16 @@ class Cell():
 	"""
 	def calc_mines_arround(self):
 		for pos in Settings.fields_arround:
-			new_row = self.row + pos[0]
-			new_column = self.column + pos[1]
+			new_row = self.row + pos[0] # Speichert die X Position einer umliegenden Zelle
+			new_column = self.column + pos[1] # Speichert die Y Position einer umliegenden Zelle
+
+			# Prüft, ob sich die neu ausgewählt Zelle nicht im Spielbereich befindet.
 			if new_row >= 0 and new_row < Settings.grid and new_column >= 0 and new_column < Settings.grid:
+				
+				"""
+				Prüft, ob die neu ausgewählt Zelle eine Bombe ist, ist das der Fall,
+				wird der Wert 'mines_arround' für die entsprechende Zelle erhöht.
+				"""
 				if Settings.field[new_row * Settings.grid + new_column].mine:
 					self.mines_arround += 1
 
@@ -125,7 +132,7 @@ class Playground_builder():
 
 	"""
 	Positioniert die Bomben auf dem Spielfeld
-	Es werden maximal 10 Bomben platziert
+	an einer zufällig bestimmten Position.
 	"""
 	def mine_placer(self):
 		while Settings.mines > 0:

@@ -330,8 +330,6 @@ class Game(QtWidgets.QMainWindow):
 	
 	def update(self):
 		for ob in Settings.field:
-			if not ob.mine:
-				ob.selected = True
 			ob.update()
 
 """

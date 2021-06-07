@@ -31,6 +31,7 @@ class Settings:
 	mines = 10
 	mines_on_field = 10
 	flagged_mines = 0
+	print(mines_on_field)
 	field = []
 
 	selected_cell = []
@@ -248,7 +249,8 @@ class Game(QtWidgets.QMainWindow):
 		"""
 		if pygame.mouse.get_pressed()[2]:
 			if not cell.marked:
-				Settings.flagged_mines += 1
+				if cell.mine:
+					Settings.flagged_mines += 1
 				cell.marked = True
 				if Settings.flagged_mines >= Settings.mines_on_field:
 					choice = QMessageBox.question(self, 'Gewonnen!', "Möchtest du es nochmal versuchen?", QMessageBox.Yes | QMessageBox.No)
@@ -259,7 +261,8 @@ class Game(QtWidgets.QMainWindow):
 					self.msg.show()
 					
 			else:
-				Settings.flagged_mines -= 1
+				if cell.mine:
+					Settings.flagged_mines -= 1
 				cell.marked = not cell.marked
 				
 		"""
@@ -327,6 +330,8 @@ class Game(QtWidgets.QMainWindow):
 	
 	def update(self):
 		for ob in Settings.field:
+			if not ob.mine:
+				ob.selected = True
 			ob.update()
 
 """

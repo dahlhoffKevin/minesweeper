@@ -248,16 +248,15 @@ class Game(QtWidgets.QMainWindow):
 		"""
 		if pygame.mouse.get_pressed()[2]:
 			if not cell.marked:
-				if cell.mine:
-					Settings.flagged_mines += 1
-					cell.marked = True
-					if Settings.flagged_mines >= Settings.mines_on_field:
-						choice = QMessageBox.question(self, 'Gewonnen!', "Möchtest du es nochmal versuchen?", QMessageBox.Yes | QMessageBox.No)
-						if choice == QMessageBox.Yes:
-							self.play_again('yes')
-						else:
-							sys.exit()
-						self.msg.show()
+				Settings.flagged_mines += 1
+				cell.marked = True
+				if Settings.flagged_mines >= Settings.mines_on_field:
+					choice = QMessageBox.question(self, 'Gewonnen!', "Möchtest du es nochmal versuchen?", QMessageBox.Yes | QMessageBox.No)
+					if choice == QMessageBox.Yes:
+						self.play_again('yes')
+					else:
+						sys.exit()
+					self.msg.show()
 					
 			else:
 				Settings.flagged_mines -= 1

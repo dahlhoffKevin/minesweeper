@@ -264,6 +264,7 @@ class Game(QtWidgets.QMainWindow):
 				if cell.mine:
 					Settings.flagged_mines -= 1
 				cell.marked = not cell.marked
+		print(Settings.flagged_mines)
 				
 		"""
 		An dieser Stelle wird überprüft, ob die angeklickte Zelle ein Bombenfeld ist,
@@ -377,7 +378,7 @@ class Menu_UI(QtWidgets.QMainWindow):
 			Settings.dimensions = 880
 			Settings.grid = 16
 			Settings.mines = 99
-			Settings.mines_on_field = 40
+			Settings.mines_on_field = 99
 			Settings.space = 880 // 16
 			self.close()
 			Settings.start_game = True

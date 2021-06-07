@@ -2,8 +2,6 @@
 Importieren der benötigten Bibiliotheken
 """
 from dataclasses import dataclass
-from tkinter import *
-from tkinter import messagebox
 from time import sleep
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QMessageBox
@@ -36,7 +34,7 @@ class Settings:
 
 	selected_cell = []
 
-	fps = 60
+	fps = 30
 
 	config = ConfigParser()
 	config.read('config.ini')
@@ -61,8 +59,6 @@ class Settings:
 		"""
 		file_path = os.path.dirname(os.path.abspath(__file__))
 		images = os.path.join(file_path, "images")
-
-		# screen = pygame.display.set_mode((dimensions, dimensions))
 		
 		Settings.cell_normal = pygame.image.load(os.path.join(images, 'cell_normal.png')).convert_alpha()
 		Settings.cell_normal = pygame.transform.scale(Settings.cell_normal, (Settings.space, Settings.space))
@@ -79,6 +75,9 @@ class Settings:
 		for n in range(9):
 			Settings.selected_cell.append(pygame.transform.scale(pygame.image.load(os.path.join(images, f'cell_sel_{n}.png')).convert_alpha(), (Settings.space, Settings.space)))
 
+"""
+Gibt zurück. ob sich dich Nachbarzellen einer Zelle außerhalb des Spielbereichs befinden
+"""
 def valid_cell(x, y):
 	return y > -1 and y < Settings.grid and x > -1 and x < Settings.grid
 
@@ -176,8 +175,6 @@ class Game(QtWidgets.QMainWindow):
 		self.playground_builder.area_builder()
 		self.playground_builder.mine_placer()
 
-		self.hit = False
-
 		for ob in Settings.field:
 			ob.calc_mines_arround()
 
@@ -196,7 +193,7 @@ class Game(QtWidgets.QMainWindow):
 			new_column = column + pos[1] # Speichert die y Koordinate
 			
 			# Überprüft, ob die neuen Positionen außerhalb des Spielfels liegen
-			if new_row >= 0 and new_row < Settings.grid and new_column >= 0 and new_column < Settings.grid:
+			if valid_cell(new_row, new_column):
 
 				# Speichert die neue Zelle
 				cell = Settings.field[new_row * Settings.grid + new_column]
@@ -258,8 +255,6 @@ class Game(QtWidgets.QMainWindow):
 						self.play_again('yes')
 					else:
 						sys.exit()
-					self.msg.show()
-					
 			else:
 				if cell.mine:
 					Settings.flagged_mines -= 1
@@ -281,13 +276,16 @@ class Game(QtWidgets.QMainWindow):
 			if cell.mine == True:
 				for ob in Settings.field:
 					if ob.mine == True:
-						self.hit = True
-
-	def show_message(self, head, text):
-		main = Tk()
-		main.withdraw()
-		question = messagebox.askquestion(head, text, icon='question')
-		return question
+						"""
+						Sobald das Spiel verloren ist,
+						wird dem Spieler die Frage gestellt,
+						ob er das Spiel noch einmal spielen möchte.
+						"""
+						choice = QMessageBox.question(self, 'Verloren!', "Möchtest du es nochmal versuchen?", QMessageBox.Yes | QMessageBox.No)
+						if choice == QMessageBox.Yes:
+							self.play_again('yes')
+						else:
+							sys.exit()
 
 	"""
 	Hauptspielschleife
@@ -311,19 +309,6 @@ class Game(QtWidgets.QMainWindow):
 				"""
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					self.check_cell()
-
-			"""
-			Sobald das Spiel verloren ist,
-			wird dem Spieler die Frage gestellt,
-			ob er das Spiel noch einmal spielen möchte.
-			"""
-			if self.hit:
-				choice = QMessageBox.question(self, 'Verloren!', "Möchtest du es nochmal versuchen?", QMessageBox.Yes | QMessageBox.No)
-				if choice == QMessageBox.Yes:
-					self.play_again('yes')
-				else:
-					sys.exit()
-				self.msg.show()
 
 			self.update()
 			pygame.display.flip()
@@ -372,8 +357,8 @@ class Menu_UI(QtWidgets.QMainWindow):
 			Settings.start_game = True
 
 		elif difficulty == '3':
-			Settings.dimensions = 880
-			Settings.grid = 16
+			Settings.dimensions = 990
+			Settings.grid = 18
 			Settings.mines = 99
 			Settings.mines_on_field = 99
 			Settings.space = 880 // 16
@@ -389,7 +374,6 @@ class Menu_UI(QtWidgets.QMainWindow):
 			self.msg.setWindowTitle('Invalid difficulty')
 			self.msg.show()
 
-
 if __name__ == '__main__':
 	"""
 	Schleife wird abgebrochen,
@@ -403,6 +387,5 @@ if __name__ == '__main__':
 		app = QtWidgets.QApplication(sys.argv)
 		menuui = Menu_UI()
 		menuui.show()
-
 		app.exec_()
 		pygame.quit()

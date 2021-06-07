@@ -330,6 +330,8 @@ class Game(QtWidgets.QMainWindow):
 	
 	def update(self):
 		for ob in Settings.field:
+			if not ob.mine:
+				ob.selected = True
 			ob.update()
 
 """
@@ -374,7 +376,7 @@ class Menu_UI(QtWidgets.QMainWindow):
 		elif difficulty == '3':
 			Settings.dimensions = 880
 			Settings.grid = 16
-			Settings.mines = 40
+			Settings.mines = 99
 			Settings.mines_on_field = 40
 			Settings.space = 880 // 16
 			self.close()
